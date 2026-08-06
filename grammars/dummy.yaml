@@ -1,0 +1,14 @@
+protocol: DummyProtocol
+states:
+  - name: INIT
+    transitions:
+      - to: AUTH
+        trigger: send_connect
+  - name: AUTH
+    transitions:
+      - to: DATA
+        trigger: send_login
+  - name: DATA
+    transitions:
+      - to: END
+        trigger: send_payload
