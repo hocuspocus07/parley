@@ -16,7 +16,7 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(yaml-cpp)
 
-add_executable(fuzzer src/main.cpp src/parser.cpp harnesses/dummy_target.cpp)
+add_executable(fuzzer src/main.cpp src/parser.cpp src/engine.cpp harnesses/dummy_target.cpp)
 
 target_include_directories(fuzzer PRIVATE include)
 

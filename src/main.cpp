@@ -1,23 +1,27 @@
 #include <iostream>
 #include "parser.hpp"
+#include "dummy_target.hpp"
+#include "engine.hpp"
 
 int main() {
     std::cout << "[*] Starting Parley Engine..." << std::endl;
     
     Parser parser;
-    // Load our dummy grammar
+    // 1. Load our dummy grammar
     ProtocolGraph graph = parser.parse_grammar("grammars/dummy.yaml");
 
     std::cout << "[+] Successfully Loaded Protocol: " << graph.protocol_name << "\n" << std::endl;
     
-    // Print out what we learned from the YAML
-    for (const auto& [name, state] : graph.states) {
-        std::cout << "State: " << name << std::endl;
-        for (const auto& t : state.transitions) {
-            std::cout << "  -> Moves to [" << t.to_state << "] via [" << t.trigger << "]" << std::endl;
-        }
-        std::cout << "-----------------------" << std::endl;
-    }
+    // 2. Initialize Target & Engine
+    DummyTarget target;
+    Engine engine(graph);
+
+    std::cout << "[*] Starting Fuzzing Loop...\n" << std::endl;
+    
+    // 3. run the fuzzer 10 times(until crash is found)
+    engine.run_fuzzer(target, 10);
+    
+    std::cout << "\n[*] Fuzzing finished without crash (if you see this, run again!)." << std::endl;
     
     return 0;
 }
