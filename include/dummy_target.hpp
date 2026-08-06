@@ -2,6 +2,8 @@
 #define DUMMY_TARGET_HPP
 
 #include <string>
+#include <vector>
+#include <cstdint>
 
 class DummyTarget {
 private:
@@ -10,6 +12,7 @@ private:
 public:
     DummyTarget();
     
+    std::vector<uint8_t> coverage_map;
     // Simulates receiving a packet over the network
     void receive_packet(const std::string& packet);
     

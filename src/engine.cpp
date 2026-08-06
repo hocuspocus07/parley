@@ -5,9 +5,10 @@
 
 Engine::Engine(ProtocolGraph graph) : protocol_graph(graph) {
     std::srand(std::time(nullptr)); // init randomizer
+    global_coverage.assign(10, 0); // Start tracking from zero
 }
 
-// 1. Ek dam perfect valid conversation banata hai
+// 1. create perfectly valid conversation
 std::vector<std::string> Engine::generate_valid_sequence() {
     std::vector<std::string> sequence;
     std::string current_state = "INIT";
@@ -40,6 +41,17 @@ std::vector<std::string> Engine::mutate_sequence(const std::vector<std::string>&
     return mutated;
 }
 
+bool Engine::has_new_coverage(const std::vector<uint8_t>& run_coverage) {
+    bool is_new = false;
+    for (size_t i = 0; i < run_coverage.size(); ++i) {
+        if (run_coverage[i] == 1 && global_coverage[i] == 0) {
+            global_coverage[i] = 1; // save new coverage in global memory
+            is_new = true;
+        }
+    }
+    return is_new;
+}
+
 // 3. Main Fuzzing Loop, continuously attacks the target with mutated sequences
 void Engine::run_fuzzer(DummyTarget& target, int iterations) {
     for (int i = 0; i < iterations; ++i) {
@@ -54,6 +66,10 @@ void Engine::run_fuzzer(DummyTarget& target, int iterations) {
         for (const std::string& packet : mutated_seq) {
             std::cout << "[Engine] Sending: " << packet << std::endl;
             target.receive_packet(packet);
+        }
+
+        if (has_new_coverage(target.coverage_map)) {
+            std::cout << "[*] System says: NEW PATH UNLOCKED! (Saving state as interesting)" << std::endl;
         }
     }
 }
